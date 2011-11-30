@@ -19,7 +19,7 @@ destroy(_Db) ->
 write(Key, Element, Db) ->
   [{Key, Element} | Db].
   
-read(Key, []) ->
+read(_, []) ->
   {error,instance};
 read(Key, [{K, E} | Db]) ->
   case Key of
@@ -29,13 +29,25 @@ read(Key, [{K, E} | Db]) ->
 
 match(Element, Db) -> match(Element, [], Db).
 
-match(_, Acc, [[]]) -> Acc;
+match(_, Acc, []) -> Acc;
 match(Element, Acc, [{K, E} | Db]) ->
   case Element of
     E -> match(Element, [K | Acc], Db);
     _ -> match(Element, Acc, Db)
   end.
 
-delete(Key, Db) ->
-  NewDb = 1,
-  NewDb.
+delete(Key, Db) -> delete(Key, [], Db).
+
+delete(_, Acc, []) -> reverse(Acc);
+delete(Key, Acc, [{K, E} | Db]) ->
+  case Key of
+    K -> delete(Key, Acc, Db);
+    _ -> delete(Key, [{K, E} | Acc], Db)
+  end.
+
+reverse(Arr) -> reverse(Arr, []).
+
+reverse([], Acc) -> Acc;
+reverse([H | T], Acc) ->
+  reverse(T, [H | Acc]).
+  
